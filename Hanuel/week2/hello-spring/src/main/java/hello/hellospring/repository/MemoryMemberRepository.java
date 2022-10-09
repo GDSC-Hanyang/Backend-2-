@@ -1,17 +1,17 @@
 package hello.hellospring.repository;
 
 import hello.hellospring.domain.Member;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 public class MemoryMemberRepository implements MemberRepository {
 
-    /*
-    동시성 문제가 고려되어 있지 않음, 실무에서는 ConcurrentHashMap, AtomicLong 사용 고려
-     */
     private static Map<Long, Member> store = new HashMap<>();
     private static long sequence = 0L;
+    /* map : 키와 값을 하나의 쌍으로 저장하는 방식 (key-value)
+        .put(key, value) : 입력
+        .get(key) : return value
+    */
 
     @Override
     public Member save(Member member) {
@@ -27,9 +27,9 @@ public class MemoryMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByName(String name) {
-        return store.values().stream()
-                .filter(member -> member.getName().equals(name))
-                .findAny();
+        return store.values().stream() // 한바퀴 쭉 도는거
+                .filter(member -> member.getName().equals(name)) // 람다
+                .findAny(); // 하나라도 찾으면 바로 반환
     }
 
     @Override
@@ -41,3 +41,8 @@ public class MemoryMemberRepository implements MemberRepository {
         store.clear();
     }
 }
+
+/*
+optional : findById나 findByName할때 Null일 수 있다
+-> null을 그대로 반환하는 대신 optional로 감싸서 반환하는거 요새 선호
+*/
